@@ -121,3 +121,28 @@ window.addEventListener('keydown', (e) => {
         bulletSound.play();
     }
 });
+
+// mobile controls
+function createButton(text, x, y, action) {
+    let button = new PIXI.Text(text, {fontFamily : 'Arial', fontSize: 24, fill : 0xffffff, align : 'center'});
+    button.x = x;
+    button.y = y;
+    button.interactive = true;
+    button.buttonMode = true;
+    button
+        .on('pointerdown', action)
+        .on('pointerup', endAction)
+        .on('pointerupoutside', endAction);
+    app.stage.addChild(button);
+}
+
+createButton('LEFT', 10, app.screen.height - 60, () => spaceship.x -= 10);
+createButton('RIGHT', 100, app.screen.height - 60, () => spaceship.x += 10);
+createButton('FIRE', app.screen.width - 100, app.screen.height - 60, () => {
+    createBullet(spaceship.x + spaceship.width / 2, spaceship.y);
+    bulletSound.play();
+});
+
+function endAction() {
+    // can be used to stop continuous movement if needed
+}
