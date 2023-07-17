@@ -1,10 +1,10 @@
 // create the application
 let app = new PIXI.Application({
     width: 800,
-    height: 500,
+    height: 500, // leave space for controls
     backgroundColor: 0x000000
 });
-document.body.appendChild(app.view);
+document.getElementById('game').appendChild(app.view);
 
 // player's spaceship
 let spaceship = new PIXI.Graphics();
@@ -140,30 +140,17 @@ function isMobile() {
 
 if (isMobile()) {
     // mobile controls
-    function createButton(text, x, y, action) {
-        let button = new PIXI.Graphics();
-        button.beginFill(0x0000FF);
-        button.drawRect(x, y, 70, 30);
-        let buttonText = new PIXI.Text(text, {fontFamily : 'Arial', fontSize: 24, fill : 0xffffff});
-        buttonText.x = x + 5;
-        buttonText.y = y + 5;
-        button.interactive = true;
-        button.buttonMode = true;
-        button
-            .on('pointerdown', action)
-            .on('pointerup', endAction)
-            .on('pointerupoutside', endAction);
-        app.stage.addChild(button);
-        app.stage.addChild(buttonText);
+    function createButton(text, action) {
+        let button = document.createElement('button');
+        button.textContent = text;
+        button.className = 'control-button';
+        button.addEventListener('touchstart', action);
+        document.getElementById('controls').appendChild(button);
     }
 
-    createButton('LEFT', 10, app.screen.height - 40, () => spaceship.x -= 10);
-    createButton('RIGHT', 90, app.screen.height - 40, () => spaceship.x += 10);
-    createButton('FIRE', app.screen.width - 80, app.screen.height - 40, () => {
+    createButton('LEFT', () => spaceship.x -= 10);
+    createButton('RIGHT', () => spaceship.x += 10);
+    createButton('FIRE', () => {
         createBullet(spaceship.x + spaceship.width / 2, spaceship.y);
     });
-
-    function endAction() {
-        // can be used to stop continuous movement if needed
-    }
 }

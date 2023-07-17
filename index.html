@@ -1,9 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Space Invaders</title>
+    <style>
+        #game-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            margin: auto;
+        }
+
+        #game {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #controls {
+            position: absolute;
+            width: 100%;
+            bottom: 0;
+            text-align: center;
+        }
+
+        .control-button {
+            margin: 5px;
+            padding: 5px;
+        }
+    </style>
 </head>
 <body>
+    <div id="game-container">
+        <div id="game"></div>
+        <div id="controls"></div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.2.4/pixi.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
     <script src="spaceInvaders.js"></script>
