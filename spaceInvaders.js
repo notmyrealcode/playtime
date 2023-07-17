@@ -1,7 +1,7 @@
 // create the application
 let app = new PIXI.Application({
     width: 800,
-    height: 600,
+    height: 500,
     backgroundColor: 0x000000
 });
 document.body.appendChild(app.view);
@@ -31,11 +31,15 @@ function createEnemy(x, y) {
 }
 
 // create enemies
-for (let i = 0; i < 8; i++) {
-    for (let j = 0; j < 3; j++) {
-        createEnemy(i * 60 + 100, j * 60);
+function createEnemies() {
+    for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 3; j++) {
+            createEnemy(i * 60 + 100, j * 60);
+        }
     }
 }
+
+createEnemies();
 
 // bullets
 let bullets = new PIXI.Container();
@@ -53,6 +57,7 @@ function createBullet(x, y) {
         bullet.y = y;
         bullets.addChild(bullet);
         bulletOnScreen = true;
+        bulletSound.play(); // Moved here to only play sound when bullet is actually fired
     }
 }
 
@@ -105,6 +110,13 @@ app.ticker.add(() => {
             }
             break;
         }
+
+        // restart enemies at top if they reach bottom
+        if (enemy.y >= app.screen.height) {
+            enemies.removeChildren();
+            createEnemies();
+            break;
+        }
     }
 });
 
@@ -118,31 +130,32 @@ window.addEventListener('keydown', (e) => {
     }
     else if (e.key === ' ') {
         createBullet(spaceship.x + spaceship.width / 2, spaceship.y);
-        bulletSound.play();
     }
 });
 
-// mobile controls
-function createButton(text, x, y, action) {
-    let button = new PIXI.Text(text, {fontFamily : 'Arial', fontSize: 24, fill : 0xffffff, align : 'center'});
-    button.x = x;
-    button.y = y;
-    button.interactive = true;
-    button.buttonMode = true;
-    button
-        .on('pointerdown', action)
-        .on('pointerup', endAction)
-        .on('pointerupoutside', endAction);
-    app.stage.addChild(button);
-}
+// check if user is on mobile device
+if (window.navigator.userAgent.includes('Mobi')) {
+    // mobile controls
+    function createButton(text, x, y, action) {
+        let button = new PIXI.Text(text, {fontFamily : 'Arial', fontSize: 24, fill : 0xffffff, align : 'center'});
+        button.x = x;
+        button.y = y;
+        button.interactive = true;
+        button.buttonMode = true;
+        button
+            .on('pointerdown', action)
+            .on('pointerup', endAction)
+            .on('pointerupoutside', endAction);
+        document.body.appendChild(button); // append buttons to body, not game stage
+    }
 
-createButton('LEFT', 10, app.screen.height - 60, () => spaceship.x -= 10);
-createButton('RIGHT', 100, app.screen.height - 60, () => spaceship.x += 10);
-createButton('FIRE', app.screen.width - 100, app.screen.height - 60, () => {
-    createBullet(spaceship.x + spaceship.width / 2, spaceship.y);
-    bulletSound.play();
-});
+    createButton('LEFT', 10, app.screen.height + 20, () => spaceship.x -= 10);
+    createButton('RIGHT', 100, app.screen.height + 20, () => spaceship.x += 10);
+    createButton('FIRE', app.screen.width - 100, app.screen.height + 20, () => {
+        createBullet(spaceship.x + spaceship.width / 2, spaceship.y);
+    });
 
-function endAction() {
-    // can be used to stop continuous movement if needed
+    function endAction() {
+        // can be used to stop continuous movement if needed
+    }
 }
