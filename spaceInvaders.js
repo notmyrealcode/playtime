@@ -12,7 +12,7 @@ spaceship.beginFill(0x00FF00);
 spaceship.drawRect(0, 0, 50, 50);
 spaceship.endFill();
 spaceship.x = app.screen.width / 2;
-spaceship.y = app.screen.height - spaceship.height;
+spaceship.y = app.screen.height - spaceship.height - 50; // leave space for controls
 app.stage.addChild(spaceship);
 
 // enemies
@@ -112,7 +112,7 @@ app.ticker.add(() => {
         }
 
         // restart enemies at top if they reach bottom
-        if (enemy.y >= app.screen.height) {
+        if (enemy.y >= app.screen.height - enemy.height - 50) { // account for controls
             enemies.removeChildren();
             createEnemies();
             break;
@@ -141,21 +141,25 @@ function isMobile() {
 if (isMobile()) {
     // mobile controls
     function createButton(text, x, y, action) {
-        let button = new PIXI.Text(text, {fontFamily : 'Arial', fontSize: 24, fill : 0xffffff, align : 'center'});
-        button.x = x;
-        button.y = y;
+        let button = new PIXI.Graphics();
+        button.beginFill(0x0000FF);
+        button.drawRect(x, y, 70, 30);
+        let buttonText = new PIXI.Text(text, {fontFamily : 'Arial', fontSize: 24, fill : 0xffffff});
+        buttonText.x = x + 5;
+        buttonText.y = y + 5;
         button.interactive = true;
         button.buttonMode = true;
         button
             .on('pointerdown', action)
             .on('pointerup', endAction)
             .on('pointerupoutside', endAction);
-        document.body.appendChild(button); // append buttons to body, not game stage
+        app.stage.addChild(button);
+        app.stage.addChild(buttonText);
     }
 
-    createButton('LEFT', 10, app.screen.height + 20, () => spaceship.x -= 10);
-    createButton('RIGHT', 100, app.screen.height + 20, () => spaceship.x += 10);
-    createButton('FIRE', app.screen.width - 100, app.screen.height + 20, () => {
+    createButton('LEFT', 10, app.screen.height - 40, () => spaceship.x -= 10);
+    createButton('RIGHT', 90, app.screen.height - 40, () => spaceship.x += 10);
+    createButton('FIRE', app.screen.width - 80, app.screen.height - 40, () => {
         createBullet(spaceship.x + spaceship.width / 2, spaceship.y);
     });
 
