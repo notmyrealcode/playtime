@@ -134,7 +134,11 @@ window.addEventListener('keydown', (e) => {
 });
 
 // check if user is on mobile device
-if (window.navigator.userAgent.includes('Mobi')) {
+function isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+if (isMobile()) {
     // mobile controls
     function createButton(text, x, y, action) {
         let button = new PIXI.Text(text, {fontFamily : 'Arial', fontSize: 24, fill : 0xffffff, align : 'center'});
