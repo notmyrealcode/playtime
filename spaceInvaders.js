@@ -42,14 +42,18 @@ let bullets = new PIXI.Container();
 app.stage.addChild(bullets);
 
 // function to create bullet
+let bulletOnScreen = false;
 function createBullet(x, y) {
-    let bullet = new PIXI.Graphics();
-    bullet.beginFill(0xFFFFFF);
-    bullet.drawCircle(0, 0, 5);
-    bullet.endFill();
-    bullet.x = x;
-    bullet.y = y;
-    bullets.addChild(bullet);
+    if (!bulletOnScreen) {
+        let bullet = new PIXI.Graphics();
+        bullet.beginFill(0xFFFFFF);
+        bullet.drawCircle(0, 0, 5);
+        bullet.endFill();
+        bullet.x = x;
+        bullet.y = y;
+        bullets.addChild(bullet);
+        bulletOnScreen = true;
+    }
 }
 
 let direction = 1;  // enemy movement direction
@@ -73,12 +77,19 @@ app.ticker.add(() => {
         for (let enemy of enemies.children) {
             if (bullet.x > enemy.x && bullet.x < enemy.x + enemy.width && bullet.y > enemy.y && bullet.y < enemy.y + enemy.height) {
                 bullets.removeChild(bullet);
+                bulletOnScreen = false;
                 enemies.removeChild(enemy);
                 score += 100;
                 scoreText.text = 'Score: ' + score;
                 explosionSound.play();
                 break;
             }
+        }
+
+        // remove bullets when they leave the screen
+        if (bullet.y < 0) {
+            bullets.removeChild(bullet);
+            bulletOnScreen = false;
         }
     }
 
