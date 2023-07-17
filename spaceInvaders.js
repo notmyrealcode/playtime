@@ -52,6 +52,17 @@ function createBullet(x, y) {
     bullets.addChild(bullet);
 }
 
+let direction = 1;  // enemy movement direction
+
+let score = 0;  // score
+let scoreText = new PIXI.Text('Score: ' + score, {fontFamily : 'Arial', fontSize: 24, fill : 0xffffff});
+scoreText.x = 10;
+scoreText.y = 10;
+app.stage.addChild(scoreText);
+
+let bulletSound = new Howl({ src: ['bulletSound.mp3'] });
+let explosionSound = new Howl({ src: ['explosionSound.mp3'] });
+
 // game loop
 app.ticker.add(() => {
     // move bullets
@@ -63,6 +74,9 @@ app.ticker.add(() => {
             if (bullet.x > enemy.x && bullet.x < enemy.x + enemy.width && bullet.y > enemy.y && bullet.y < enemy.y + enemy.height) {
                 bullets.removeChild(bullet);
                 enemies.removeChild(enemy);
+                score += 100;
+                scoreText.text = 'Score: ' + score;
+                explosionSound.play();
                 break;
             }
         }
@@ -70,7 +84,16 @@ app.ticker.add(() => {
 
     // move enemies
     for (let enemy of enemies.children) {
-        enemy.y += 1;
+        enemy.x += 2 * direction;
+
+        // change direction if hit edge
+        if (enemy.x <= 0 || enemy.x >= app.screen.width - enemy.width) {
+            direction *= -1;
+            for (let e of enemies.children) {
+                e.y += enemy.height;
+            }
+            break;
+        }
     }
 });
 
@@ -84,5 +107,6 @@ window.addEventListener('keydown', (e) => {
     }
     else if (e.key === ' ') {
         createBullet(spaceship.x + spaceship.width / 2, spaceship.y);
+        bulletSound.play();
     }
 });
